@@ -1,4 +1,5 @@
-turtles-own [charge]
+globals [in-game]
+turtles-own [charge velocity]
 patches-own [field]
 
 to setup
@@ -32,27 +33,31 @@ to setup
   ask turtles[
     die
   ]
-  crt 1[ ;electron
+  crt 1[
     set xcor -2
-    set ycor -2
+    set ycor starting-block
     set heading 90 - theta
     set color white
-    set size .3
-    if particle = "electron" [
+    set size .6
+    set velocity init-velocity
+    if particle = "electron" [;electron
       set charge -1
+      set shape "electron-shape"
     ]
-    if particle = "proton" [
+    if particle = "proton" [;proton
       set charge 1
+      set shape "proton-shape"
     ]
   ]
   ask patch 2 2 [
     set pcolor red
   ]
-
+  set in-game false
   reset-ticks
 end
 
 to go
+  set in-game true
   ask patches with [field = 1][;if field is into page
     ask turtles-here with [charge = 1][;and proton
       lt 1
@@ -70,13 +75,13 @@ to go
     ]
   ]
   ask turtles [;moving
-      fd 0.02
+      fd velocity;.02
       wait .02
   ]
   ask turtles [;edge detection
     if xcor > 2.4 or xcor < -2.4 or ycor > 2.4 or ycor < -2.4[
-      die
       user-message "You lost"
+      die
     ]
   ]
   ask turtles [ ;winning
@@ -86,7 +91,23 @@ to go
       ]
     ]
   ]
-  tick
+end
+
+to create-fields
+  if mouse-down? and not in-game[
+    ask patch mouse-xcor mouse-ycor [;user input patches
+      if pcolor != red[
+        if click-for-field = "into the page"[
+          set pcolor violet
+          set field 1
+        ]
+        if click-for-field = "out of the page"[
+          set pcolor orange
+          set field -1
+        ]
+      ]
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -110,8 +131,8 @@ GRAPHICS-WINDOW
 2
 -2
 2
-1
-1
+0
+0
 1
 ticks
 50.0
@@ -159,21 +180,95 @@ theta
 theta
 0
 360
-73.0
+0.0
 1
 1
 NIL
 HORIZONTAL
 
 CHOOSER
-467
-291
-605
-336
+462
+160
+600
+205
 particle
 particle
 "electron" "proton"
+0
+
+BUTTON
+16
+482
+79
+515
+stuff
+NIL
+T
 1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+CHOOSER
+465
+347
+607
+392
+click-for-field
+click-for-field
+"into the page" "out of the page"
+1
+
+BUTTON
+774
+281
+884
+314
+create-fields
+create-fields
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+446
+291
+677
+324
+starting-block
+starting-block
+-2
+2
+1.0
+1
+1
+from center tile
+HORIZONTAL
+
+SLIDER
+508
+435
+680
+468
+init-velocity
+init-velocity
+0.005
+0.05
+0.005
+0.005
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## COLORS OF PATCHES
@@ -302,6 +397,13 @@ false
 0
 Circle -7500403 true true 90 90 120
 
+electron-shape
+true
+0
+Circle -7500403 true true 90 90 120
+Rectangle -2674135 true false 105 135 195 165
+Polygon -13345367 true false 105 105 150 45 195 105
+
 face happy
 false
 0
@@ -409,6 +511,14 @@ Polygon -7500403 true true 165 180 165 210 225 180 255 120 210 135
 Polygon -7500403 true true 135 105 90 60 45 45 75 105 135 135
 Polygon -7500403 true true 165 105 165 135 225 105 255 45 210 60
 Polygon -7500403 true true 135 90 120 45 150 15 180 45 165 90
+
+proton-shape
+true
+0
+Circle -7500403 true true 90 90 120
+Rectangle -13840069 true false 105 135 195 165
+Polygon -13345367 true false 105 105 150 45 195 105
+Rectangle -13840069 true false 135 105 165 195
 
 sheep
 false
