@@ -475,7 +475,8 @@ to change-intensity
            set pcolor gray
           ]
           set plabel field
-          set buffer 2000
+          ;set buffer 2000 ;offline
+          set buffer 5 ;online
         ]
         [
           set buffer (buffer - 1)
