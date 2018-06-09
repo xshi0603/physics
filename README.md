@@ -3,7 +3,7 @@
 
 ## WEBSITE LINK
 
-[Game]https://xshi0603.github.io/physics/
+[Game](https://xshi0603.github.io/physics/)
 
 ## DEMONSTRATION VIDEO
 
