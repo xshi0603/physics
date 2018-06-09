@@ -928,9 +928,9 @@ by Xing Tao Shi & Henry Zheng
 
 @#$#@#$#@
 # CoolPhysicsGames
-#### Xing Tao Shi and Henry Zheng<br>AP Physics C pd9/10<br>Final Project
-
-## WEBSITE LINK
+#### Xing Tao Shi and Henry Zheng
+#### AP Physics C pd9/10
+#### Final Project
 
 ## DEMONSTRATION VIDEO
 
@@ -949,50 +949,52 @@ CoolPhysicsGames is a physics game that attempts to teach users about magnetic f
 
 ## BUTTONS
 
-<b>init-setup (A)</b>
+#### init-setup (A)
 Restarts game at level 0.
 
-<b>setup-level (S)</b>
+#### setup-level (S)
 Sets up game at current level.
 
-<b>create-fields (K)</b>
+#### create-fields (K)
 After pressing this button, user can click on patches to create fields based on click-for-field.
 
-<b>change-intensity (L)</b>
+#### change-intensity (L)
 After pressing this button, user can click on patches to change intensity of fields based on intensity and delta-intensity.
 
-<b>go (G)</b>
+#### go (G)
 Starts the game.
 
 ## CHOOSERS
 
-<b>particle</b>
+#### particle
 Type of particle
 
-<b>click-for-field</b>
+#### click-for-field
 Type of field
 
-<b>intensity</b>
+#### intensity
 Intensity of field
 
 ## SLIDERS
 
-<b>theta</b>
+#### theta
 Starting angle from +x axis (horizontal)
 
-<b>starting-block</b>
+#### starting-block
 Starting block from center tile
 
-<b>init-velocity</b>
+#### init-velocity
 Initial velocity of particle
 
-<b>delta-intensity</b>
+#### delta-intensity
 Change of intensity when using change-intensity
 
 ## COLORS OF PATCHES
 
 Indigo - into the page
+
 Orange - out of the page
+
 Red - goal
 @#$#@#$#@
 default
