@@ -64,6 +64,6 @@ Change of intensity when using change-intensity
 
 ## COLORS OF PATCHES
 
-Indigo - into the page
-Orange - out of the page
+Indigo - into the page <br>
+Orange - out of the page <br>
 Red - goal
