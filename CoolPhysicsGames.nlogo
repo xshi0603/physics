@@ -476,7 +476,7 @@ to change-intensity
           ]
           set plabel field
           ;set buffer 2000 ;offline
-          set buffer 5 ;online
+          set buffer 3 ;online
         ]
         [
           set buffer (buffer - 1)
