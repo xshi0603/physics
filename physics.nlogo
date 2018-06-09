@@ -1,39 +1,406 @@
-globals [in-game]
-turtles-own [charge velocity]
+globals [in-game buffer level in-between lives lost deaded]
 patches-own [field]
+breed [walls wall]
+breed [players player]
+breed [hearts heart]
+players-own [charge velocity]
 
 to setup
   clear-all
   ;ask patches [set pcolor [ [random 255] 255 255]]
-  ask patches[
-    sprout 1 [;creating grid
-      set color white
-      set heading 0
-      set pen-size 1
-      fd .5
-      pen-down
-      rt 90
-      fd .5
-      rt 90
-      fd 1
-      rt 90
-      fd 1
-      rt 90
-      fd .5
-    ]
-    ifelse (pxcor + pycor) mod 2 = 0[;coloring fields
-      set pcolor orange
-      set field -1
+  draw-grid
+  ;color-checker
+  color-gray
+  ;color-orange
+  ;color-purple
+  spawn-player
+  ;draw-wall 0 0 0 .5
+  ;draw-wall 0 0 90 .5
+  ;draw-wall 0 0 180 .5
+  ;draw-wall 0 0 270 .5
+  set in-game false
+  set in-between false
+  set lost false
+  set deaded false
+  set level 0
+  set lives 3
+  reset-ticks
+end
+
+to setup-level
+  ifelse lost [
+    user-message "You are out of lives. Please click init-setup to restart game"
+  ]
+  [
+    ifelse in-game [
+      user-message "You are ingame. Please wait for the round to resolve"
     ]
     [
-      set pcolor violet
-      set field 1
+      ;clear-all
+      clear-drawing
+      clear-patches
+      draw-grid
+      color-gray
+      spawn-player
+      spawn-walls
+      reset-ticks
+    ]
+  ]
+end
+
+to spawn-lives
+  if (random 10) = 0 [
+    ask patch ((random 5) - 2) ((random 5) - 2) [
+      sprout-hearts 1 [
+        set shape "star"
+        set size .3
+        set color pink
+      ]
+    ]
+  ]
+end
+
+to kill-lives
+  ask hearts [
+    die
+  ]
+end
+
+to spawn-walls
+  if level = 0[
+  ]
+  if level = 1[
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 2[
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 3[
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 4[
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 5[
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 6[
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 7[
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 8[
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 9[
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 10[
+    draw-wall 0 1 270 0.5
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 11[
+    draw-wall 0 0 270 0.5
+    draw-wall 0 1 270 0.5
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 12[
+    draw-wall 0 -1 270 0.5
+    draw-wall 0 0 270 0.5
+    draw-wall 0 1 270 0.5
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 13[
+    draw-wall -1 -2 270 0.5
+    draw-wall 0 -1 270 0.5
+    draw-wall 0 0 270 0.5
+    draw-wall 0 1 270 0.5
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 14[
+    draw-wall -1 -1 270 0.5
+    draw-wall -1 -2 270 0.5
+    draw-wall 0 -1 270 0.5
+    draw-wall 0 0 270 0.5
+    draw-wall 0 1 270 0.5
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 15[
+    draw-wall -1 0 270 0.5
+    draw-wall -1 -1 270 0.5
+    draw-wall -1 -2 270 0.5
+    draw-wall 0 -1 270 0.5
+    draw-wall 0 0 270 0.5
+    draw-wall 0 1 270 0.5
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+  if level = 16[
+    draw-wall -1 1 270 0.5
+    draw-wall -1 0 270 0.5
+    draw-wall -1 -1 270 0.5
+    draw-wall -1 -2 270 0.5
+    draw-wall 0 -1 270 0.5
+    draw-wall 0 0 270 0.5
+    draw-wall 0 1 270 0.5
+    draw-wall 0 2 270 0.5
+    draw-wall 1 1 270 0.5
+    draw-wall 1 0 270 0.5
+    draw-wall 1 -1 270 0.5
+    draw-wall 1 -2 270 0.5
+    draw-wall 2 -1 270 0.5
+    draw-wall 2 0 270 0.5
+    draw-wall 2 1 270 0.5
+    draw-wall 2 2 270 0.5
+  ]
+end
+
+to random-walls
+  let i 0
+  loop [
+    ifelse i >= level [
+      stop
+    ]
+    [
+      draw-wall ((random 5) - 2) ((random 5) - 2) ((random 4) * 90) .5
+      set i (i + 1)
+    ]
+  ]
+end
+
+to draw-grid
+  ask patches[
+    if abs pxcor < 2 and abs pycor < 2 [
+      sprout 1 [;creating grid
+        set color white
+        set heading 0
+        set pen-size 1
+        fd .5
+        pen-down
+        rt 90
+        fd .5
+        rt 90
+        fd 1
+        rt 90
+        fd 1
+        rt 90
+        fd 1
+        rt 90
+        fd .5
+      ]
+    ]
+    if pxcor = -2 and pycor != 2[
+      sprout 1 [;creating grid
+        set color white
+        set heading 0
+        set pen-size 1
+        fd .5
+        set heading 90
+        fd .5
+        pen-down
+        set heading 270
+        fd .99
+      ]
+    ]
+    if pycor = 2 and pxcor != 2[
+      sprout 1[
+        set color white
+        set heading 180
+        set pen-size 1
+        fd .5
+        set heading 90
+        fd .5
+        pen-down
+        set heading 0
+        fd .99
+      ]
+    ]
+    if pxcor = 2 and pycor != 2[
+      sprout 1[
+        set color white
+        set heading 0
+        set pen-size 1
+        fd .5
+        set heading 270
+        fd .5
+        pen-down
+        set heading 90
+        fd .99
+      ]
+    ]
+    if pycor = -2 and pxcor != 2[
+      sprout 1[
+        set color white
+        set heading 0
+        set pen-size 1
+        fd .5
+        set heading 90
+        fd .5
+        pen-down
+        set heading 180
+        fd .99
+      ]
     ]
   ]
   ask turtles[
-    die
+    if breed != hearts [
+      ;user-message "hello world"
+      die
+    ]
   ]
-  crt 1[
+end
+
+to color-checker
+ ask patches[
+    ifelse (pxcor + pycor) mod 2 = 0[;coloring fields
+      ifelse pxcor = 2 and pycor = 2 [
+        set pcolor red
+      ]
+      [
+        set field -10
+        set pcolor orange + (field * .1) + 1
+      ]
+    ]
+    [
+      set field 10
+      set pcolor violet + (field * .1) - 1
+    ]
+    ifelse pcolor != red[
+      set plabel field
+    ]
+    [
+      set plabel "WIN"
+    ]
+  ]
+end
+
+to color-gray
+   ask patches[
+    ifelse pxcor = 2 and pycor = 2 [
+      set pcolor red
+      set plabel "WIN"
+    ]
+    [
+      set pcolor gray
+      set field 0
+    ]
+  ]
+end
+
+to color-orange
+   ask patches[
+    ifelse pxcor = 2 and pycor = 2 [
+      set pcolor red
+      set plabel "WIN"
+    ]
+    [
+      set field -10
+      set pcolor orange + (field * .1) + 1
+      set plabel field
+    ]
+  ]
+end
+
+to color-purple
+   ask patches[
+    ifelse pxcor = 2 and pycor = 2 [
+      set pcolor red
+      set plabel "WIN"
+    ]
+    [
+      set field 10
+      set pcolor violet + (field * .1) - 1
+      set plabel field
+    ]
+  ]
+end
+
+to spawn-player
+  create-players 1[
     set xcor -2
     set ycor starting-block
     set heading 90 - theta
@@ -49,83 +416,268 @@ to setup
       set shape "proton-shape"
     ]
   ]
-  ask patch 2 2 [
-    set pcolor red
-  ]
-  set in-game false
-  reset-ticks
-end
-
-to go
-  set in-game true
-  ask patches with [field = 1][;if field is into page
-    ask turtles-here with [charge = 1][;and proton
-      lt 1
-    ]
-    ask turtles-here with [charge = -1][;and electron
-      rt 1
-    ]
-  ]
-  ask patches with [field = -1][;if field out of page
-    ask turtles-here with [charge = 1][;and proton
-      rt 1
-    ]
-    ask turtles-here with [charge = -1][;and electron
-      lt 1
-    ]
-  ]
-  ask turtles [;moving
-      fd velocity;.02
-      wait .02
-  ]
-  ask turtles [;edge detection
-    if xcor > 2.4 or xcor < -2.4 or ycor > 2.4 or ycor < -2.4[
-      user-message "You lost"
-      die
-    ]
-  ]
-  ask turtles [ ;winning
-    ask patch-here[
-     if pcolor = red[
-      user-message "Good Job Ms. Sharaf"
-      ]
-    ]
-  ]
 end
 
 to create-fields
+  if in-game [
+    user-message "You are in game. You cannot create-fields while in game"
+    stop
+  ]
   if mouse-down? and not in-game[
     ask patch mouse-xcor mouse-ycor [;user input patches
       if pcolor != red[
         if click-for-field = "into the page"[
-          set pcolor violet
-          set field 1
+          set field 10
+          set pcolor violet  + (field * .1) - 1
         ]
         if click-for-field = "out of the page"[
-          set pcolor orange
-          set field -1
+          set field -10
+          set pcolor orange + (field * .1) + 1
         ]
+        set plabel field
       ]
     ]
   ]
 end
+
+to change-intensity
+  if in-game [
+    user-message "You are in game. You cannot change-intensity while in game"
+    stop
+  ]
+  if mouse-down? and not in-game[
+    ask patch mouse-xcor mouse-ycor [;user input patches
+      if pcolor != red[
+        ifelse buffer = 0 [
+          if intensity = "plus" [
+            if not ((field + delta-intensity) > 40) [
+              set field (field + delta-intensity)
+              ifelse field > 0 [
+                set pcolor violet + (field * .1) - 1
+              ]
+              [
+                set pcolor orange + (field * .1) + 1
+              ]
+            ]
+          ]
+          if intensity = "minus" [
+            if not ((field - delta-intensity) < -40) [
+              set field (field - delta-intensity)
+              ifelse field < 0 [
+                set pcolor orange + (field * .1) + 1
+              ]
+              [
+                set pcolor violet + (field * .1) - 1
+              ]
+            ]
+          ]
+          if field = 0 [
+           set pcolor gray
+          ]
+          set plabel field
+          set buffer 2000
+        ]
+        [
+          set buffer (buffer - 1)
+        ]
+      ]
+    ]
+  ]
+
+end
+
+to mag-force
+  ask patches with [field > 0][;if field is into page
+    ask players-here with [charge = 1][;and proton
+      lt field * .1
+    ]
+    ask players-here with [charge = -1][;and electron
+      rt field * .1
+    ]
+  ]
+  ask patches with [field < 0][;if field out of page
+    ask players-here with [charge = 1][;and proton
+      lt field * .1
+    ]
+    ask players-here with [charge = -1][;and electron
+      rt field * .1
+    ]
+  ]
+end
+
+to move-vel
+  ask players [;moving
+      fd velocity;.02
+      wait .02
+  ]
+end
+
+to edge-detect
+  ask turtles [;edge detection
+    if xcor > 2.4 or xcor < -2.4 or ycor > 2.4 or ycor < -2.4[
+      set color black
+    ]
+  ]
+end
+
+to check-win
+  let won false
+  ask players [ ;winning
+    ask patch-here[
+     if plabel = "WIN"[
+        set won true
+      ]
+    ]
+    if won [
+      stamp
+      die
+    ]
+  ]
+  if won [
+    user-message "Good Job Ms. Sharaf! You have completed this level."
+    set won false
+    next-level
+  ]
+end
+
+to draw-wall [x y phi len]
+  let i 0.1
+  ask patch x y [
+    sprout-walls 1 [
+      set shape "wall"
+      set color black
+      set heading phi
+      fd .5
+    ]
+    loop [
+      ifelse i > len [
+       stop
+      ]
+      [
+        sprout-walls 1 [
+          set shape "wall"
+          set color black
+          set heading phi
+          fd .5
+          rt 90
+          fd i
+        ]
+        sprout-walls 1 [
+          set shape "wall"
+          set color black
+          set heading phi
+          fd .5
+          lt 90
+          fd i
+        ]
+        set i (i + .1)
+      ]
+    ]
+  ]
+end
+
+to wall-detect
+  ask walls [
+    ask players in-radius 0.1 [
+     set color black
+    ]
+  ]
+end
+
+to death-detect
+  let dead false
+  ask players [
+    if color = black [
+      set in-game false
+      set dead true
+      set deaded true
+      stamp
+      set lives (lives - 1)
+      die
+    ]
+  ]
+  if dead [
+    ifelse lives = 0 [
+      user-message "You are out of lives. Please click init-setup to restart game"
+      set lost true
+    ]
+    [
+      user-message "You lost a life. Please click setup-level after making changes"
+      setup-level
+    ]
+    set dead false
+  ]
+end
+
+to next-level
+  set level (level + 1)
+  add-live
+  set in-game false
+  setup-level
+  set in-between true
+  kill-lives
+  spawn-lives
+end
+
+to heart-detect
+  ask players [
+    ask hearts in-radius 0.1 [
+      set lives (lives + 1)
+      die
+    ]
+  ]
+end
+
+to add-live
+  if level mod 5 = 0 [
+    set lives (lives + 1)
+    user-message "Congrats on passing five levels. You gained a life!"
+  ]
+end
+
+to-report report-level
+  report level
+end
+
+to-report report-lives
+  report lives
+end
+
+to go
+  if deaded [
+    set deaded false
+    stop
+  ]
+  set in-game true
+  mag-force
+  move-vel
+  edge-detect
+  wall-detect
+  heart-detect
+  check-win
+  if in-between [
+    set in-between false
+    stop
+  ]
+  death-detect
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
-906
-129
-1414
-638
+818
+96
+1326
+605
 -1
 -1
 100.0
 1
-10
+15
 1
 1
 1
 0
-1
-1
+0
+0
 1
 -2
 2
@@ -138,10 +690,10 @@ ticks
 50.0
 
 BUTTON
-791
-223
-854
-256
+383
+248
+476
+281
 go
 go
 T
@@ -155,12 +707,173 @@ NIL
 1
 
 BUTTON
-787
-172
-853
-205
+283
+248
+376
+281
+init-setup
 setup
-setup
+NIL
+1
+T
+OBSERVER
+NIL
+A
+NIL
+NIL
+1
+
+SLIDER
+97
+408
+306
+441
+theta
+theta
+0
+360
+61.0
+1
+1
+NIL
+HORIZONTAL
+
+CHOOSER
+98
+357
+307
+402
+particle
+particle
+"electron" "proton"
+1
+
+CHOOSER
+410
+356
+552
+401
+click-for-field
+click-for-field
+"into the page" "out of the page"
+1
+
+BUTTON
+410
+406
+553
+439
+create-fields
+create-fields
+T
+1
+T
+OBSERVER
+NIL
+K
+NIL
+NIL
+1
+
+SLIDER
+96
+447
+307
+480
+starting-block
+starting-block
+-2
+2
+-2.0
+1
+1
+from center tile
+HORIZONTAL
+
+SLIDER
+96
+488
+307
+521
+init-velocity
+init-velocity
+0.005
+0.05
+0.05
+0.005
+1
+NIL
+HORIZONTAL
+
+BUTTON
+572
+470
+716
+503
+change-intensity
+change-intensity
+T
+1
+T
+OBSERVER
+NIL
+L
+NIL
+NIL
+1
+
+CHOOSER
+571
+509
+717
+554
+intensity
+intensity
+"plus" "minus"
+1
+
+TEXTBOX
+572
+367
+722
+409
+Cannot use create-fields and change-intensity after go has been pressed
+11
+0.0
+1
+
+SLIDER
+571
+560
+718
+593
+delta-intensity
+delta-intensity
+1
+10
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+413
+480
+563
+578
+For positive field values (initially violet), the lighter the color the stronger the intensity. For negative field values, (initially orange), the darker the color the stronger the intensity
+11
+0.0
+1
+
+BUTTON
+96
+546
+307
+579
+setup-level
+setup-level
 NIL
 1
 T
@@ -171,147 +884,116 @@ NIL
 NIL
 1
 
-SLIDER
-456
-234
-628
-267
-theta
-theta
-0
-360
+MONITOR
+282
+187
+377
+232
+Level
+report-level
+2
+1
+11
+
+MONITOR
+382
+187
+477
+232
+# Lives
+report-lives
+1
+1
+11
+
+TEXTBOX
+251
+88
+530
+160
+CoolPhysicsGames
+30
 0.0
 1
-1
-NIL
-HORIZONTAL
 
-CHOOSER
-462
-160
-600
-205
-particle
-particle
-"electron" "proton"
-0
-
-BUTTON
-16
-482
-79
-515
-stuff
-NIL
-T
+TEXTBOX
+240
+123
+578
+173
+by Xing Tao Shi & Henry Zheng
+20
+0.0
 1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-CHOOSER
-465
-347
-607
-392
-click-for-field
-click-for-field
-"into the page" "out of the page"
-1
-
-BUTTON
-774
-281
-884
-314
-create-fields
-create-fields
-T
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-SLIDER
-446
-291
-677
-324
-starting-block
-starting-block
--2
-2
-1.0
-1
-1
-from center tile
-HORIZONTAL
-
-SLIDER
-508
-435
-680
-468
-init-velocity
-init-velocity
-0.005
-0.05
-0.005
-0.005
-1
-NIL
-HORIZONTAL
 
 @#$#@#$#@
-## COLORS OF PATCHES
+# CoolPhysicsGames
+#### Xing Tao Shi and Henry Zheng<br>AP Physics C pd9/10<br>Final Project
 
-into the page - Indigo
-out of the page - Orange
-goal - Red
+## WEBSITE LINK
+
+## DEMONSTRATION VIDEO
 
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+CoolPhysicsGames is a physics game that attempts to teach users about magnetic fields through the use of a interactive education experience. Users will be able to modify fields, type of particle, velocity of particle, and angle of particle. They will use these key components to navigate a particle through an extensive maze of walls in order to get to the end zone and win the game.
 
-## HOW IT WORKS
+## HOW TO PLAY
 
-(what rules the agents use to create the overall behavior of the model)
+1. User must click init-setup to initially set up the game.
+2. User will then modify any components they wish to change about the particle.
+3. User must then click setup-level after confirming their changes to the particle.
+4. User can then use create-fields and change-intensity to modify the magnetic fields by clicking on the patch the user would like to modify.
+5. User will then press go to enjoy the game!
+6. If User runs into the star, they will gain an extra life! <3
 
-## HOW TO USE IT
+## BUTTONS
 
-(how to use the model, including a description of each of the items in the Interface tab)
+<b>init-setup (A)</b>
+Restarts game at level 0.
 
-## THINGS TO NOTICE
+<b>setup-level (S)</b>
+Sets up game at current level.
 
-(suggested things for the user to notice while running the model)
+<b>create-fields (K)</b>
+After pressing this button, user can click on patches to create fields based on click-for-field.
 
-## THINGS TO TRY
+<b>change-intensity (L)</b>
+After pressing this button, user can click on patches to change intensity of fields based on intensity and delta-intensity.
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+<b>go (G)</b>
+Starts the game.
 
-## EXTENDING THE MODEL
+## CHOOSERS
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+<b>particle</b>
+Type of particle
 
-## NETLOGO FEATURES
+<b>click-for-field</b>
+Type of field
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+<b>intensity</b>
+Intensity of field
 
-## RELATED MODELS
+## SLIDERS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+<b>theta</b>
+Starting angle from +x axis (horizontal)
 
-## CREDITS AND REFERENCES
+<b>starting-block</b>
+Starting block from center tile
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+<b>init-velocity</b>
+Initial velocity of particle
+
+<b>delta-intensity</b>
+Change of intensity when using change-intensity
+
+## COLORS OF PATCHES
+
+Indigo - into the page
+Orange - out of the page
+Red - goal
 @#$#@#$#@
 default
 true
@@ -606,6 +1288,11 @@ Polygon -10899396 true false 105 90 75 75 55 75 40 89 31 108 39 124 60 105 75 10
 Polygon -10899396 true false 132 85 134 64 107 51 108 17 150 2 192 18 192 52 169 65 172 87
 Polygon -10899396 true false 85 204 60 233 54 254 72 266 85 252 107 210
 Polygon -7500403 true true 119 75 179 75 209 101 224 135 220 225 175 261 128 261 81 224 74 135 88 99
+
+wall
+true
+0
+Rectangle -7500403 true true 135 135 165 165
 
 wheel
 false
