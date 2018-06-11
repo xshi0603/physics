@@ -7,6 +7,8 @@
 
 ## DEMONSTRATION VIDEO
 
+[Video](https://youtu.be/DIjzaqeUpNQ)
+
 ## WHAT IS IT?
 
 CoolPhysicsGames is a physics game that attempts to teach users about magnetic fields through the use of a interactive education experience. Users will be able to modify fields, type of particle, velocity of particle, and angle of particle. They will use these key components to navigate a particle through an extensive maze of walls in order to get to the end zone and win the game.
